@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace gma.System.Windows
 {
@@ -325,6 +326,8 @@ namespace gma.System.Windows
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern short GetKeyState(int vKey);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
         #endregion
 
         #region Windows constants
@@ -524,8 +527,7 @@ namespace gma.System.Windows
                 hMouseHook = SetWindowsHookEx(
                     WH_MOUSE_LL,
                     MouseHookProcedure,
-                    Marshal.GetHINSTANCE(
-                        Assembly.GetExecutingAssembly().GetModules()[0]),
+                    GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName),
                     0);
                 //If SetWindowsHookEx fails.
                 if (hMouseHook == 0)
@@ -548,8 +550,7 @@ namespace gma.System.Windows
                 hKeyboardHook = SetWindowsHookEx(
                     WH_KEYBOARD_LL,
                     KeyboardHookProcedure,
-                    Marshal.GetHINSTANCE(
-                    Assembly.GetExecutingAssembly().GetModules()[0]),
+                    GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName),
                     0);
                 //If SetWindowsHookEx fails.
                 if (hKeyboardHook == 0)

@@ -50,6 +50,7 @@ namespace Multiple_Mice.UI
                 Mouse2GB.Text = M2.Caption + ":";
                 Mouse2SLbl.Text = M2.Status;
                 Mouse2SLbl.ForeColor = Color.Black;
+                Mouse2LLbl.Text = "(" + M2.Location.X + "," + M2.Location.Y + ")";
             }
             else
             {
