@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Multiple_Mice</RootNamespace>
     <AssemblyName>Multiple Mice</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,11 +48,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Code\Structures\Engine.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Code\Raw\DataStructures.cs" />
+    <Compile Include="Code\Raw\Enumerations.cs" />
+    <Compile Include="Code\Raw\MouseEvent.cs" />
+    <Compile Include="Code\Raw\PreMessageFilter.cs" />
+    <Compile Include="Code\Raw\RawInputEventArg.cs" />
+    <Compile Include="Code\Raw\RawMouse.cs" />
+    <Compile Include="Code\Raw\RegistryAccess.cs" />
+    <Compile Include="Code\Raw\Win32.cs" />
+    <Compile Include="Code\Structures\Engineold.cs" />
+    <Compile Include="Code\Structures\Engine.cs" />
     <Compile Include="Code\Structures\Mouse.cs" />
     <Compile Include="Code\UserActivityHook.cs" />
+    <Compile Include="UI\Cursor.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +82,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
