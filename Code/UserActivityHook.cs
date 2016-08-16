@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace gma.System.Windows
 {
@@ -326,8 +325,6 @@ namespace gma.System.Windows
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern short GetKeyState(int vKey);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
         #endregion
 
         #region Windows constants
@@ -527,7 +524,9 @@ namespace gma.System.Windows
                 hMouseHook = SetWindowsHookEx(
                     WH_MOUSE_LL,
                     MouseHookProcedure,
-                    GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName),
+                    IntPtr.Zero
+                    /*Marshal.GetHINSTANCE(
+                        Assembly.GetExecutingAssembly().GetModules()[0])*/,
                     0);
                 //If SetWindowsHookEx fails.
                 if (hMouseHook == 0)
@@ -550,7 +549,8 @@ namespace gma.System.Windows
                 hKeyboardHook = SetWindowsHookEx(
                     WH_KEYBOARD_LL,
                     KeyboardHookProcedure,
-                    GetModuleHandle(Process.GetCurrentProcess().MainModule.ModuleName),
+                    Marshal.GetHINSTANCE(
+                    Assembly.GetExecutingAssembly().GetModules()[0]),
                     0);
                 //If SetWindowsHookEx fails.
                 if (hKeyboardHook == 0)
@@ -560,7 +560,7 @@ namespace gma.System.Windows
                     //do cleanup
                     Stop(false, true, false);
                     //Initializes and throws a new instance of the Win32Exception class with the specified error. 
-                    throw new Win32Exception(errorCode);
+                   // throw new Win32Exception(errorCode);
                 }
             }
         }

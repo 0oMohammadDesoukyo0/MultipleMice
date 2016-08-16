@@ -1,5 +1,7 @@
-﻿using Multiple_Mice.Code.Structures;
+﻿using Multiple_Mice.Code.Raw;
+using Multiple_Mice.Code.Structures;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Management;
 using System.Text;
@@ -9,10 +11,18 @@ namespace Multiple_Mice.UI
 {
     public partial class Main : Form
     {
-        Engine MiceEngine;
+        public Engine MiceEngine;
+        public static Main Instance;
         public Main()
         {
+
             InitializeComponent();
+            MiceEngine = new Engine(Handle, true);
+         
+            MiceEngine.AddMessageFilter();   // Adding a message filter will cause  to be handled
+            Win32.DeviceAudit();            // Writes a file DeviceAudit.txt to the current directory
+
+            SetMiceLabels();
             //adjust opacity bar to 100% 
             OpacityBar.Value = 100;
             //addjust window location to be bottom extra right primary screen
@@ -22,16 +32,18 @@ namespace Multiple_Mice.UI
             //25);
             //(int)(System.Windows.SystemParameters.PrimaryScreenHeight - Height) / 2);
             //Create Mice Engine object
-            MiceEngine = new Engine(UpdateMiceData);
-            //run it
-            MiceEngine.RefreshMice();
-            //update Mouse data
-            UpdateMiceData();
+            /*  MiceEngine = new Engine(UpdateMiceData);
+              //run it
+              MiceEngine.RefreshMice();
+              //update Mouse data
+              UpdateMiceData();*/
+            Instance = this;
         }
         public void UpdateMiceData()
         {
-            Mouse M1 = MiceEngine.GetMouse(0);
+          /*  Mouse M1 = MiceEngine.GetMouse(0);
             Mouse M2 = MiceEngine.GetMouse(1);
+            Mouse M3 = MiceEngine.GetMouse(2);
             if (M1 != null)
             {
                 Mouse1GB.Text = M1.Caption+":";
@@ -50,7 +62,6 @@ namespace Multiple_Mice.UI
                 Mouse2GB.Text = M2.Caption + ":";
                 Mouse2SLbl.Text = M2.Status;
                 Mouse2SLbl.ForeColor = Color.Black;
-                Mouse2LLbl.Text = "(" + M2.Location.X + "," + M2.Location.Y + ")";
             }
             else
             {
@@ -58,8 +69,44 @@ namespace Multiple_Mice.UI
                 Mouse2SLbl.Text = "Disconnected";
                 Mouse2SLbl.ForeColor = Color.Red;
             }
+            if (M3 != null)
+            {
+                Mouse3GB.Text = M3.Caption + ":";
+                Mouse3SLbl.Text = M3.Status;
+                Mouse3SLbl.ForeColor = Color.Black;
+            }
+            else
+            {
+                Mouse3GB.Text = "Mouse3:";
+                Mouse3SLbl.Text = "Disconnected";
+                Mouse3SLbl.ForeColor = Color.Red;
+            }*/
         }
-
+        public void SetMiceLabels()
+        {
+            /*if (MiceEngine.Mice.Count>0&&MiceEngine.Mice[0]!=null)
+            {
+                MiceEngine.Mice[0].MyName = Mouse1GB;
+                MiceEngine.Mice[0].MyStatus = Mouse1SLbl;
+                MiceEngine.Mice[0].MyXnY = Mouse1LLbl;
+            }
+            if (MiceEngine.Mice.Count > 1 && MiceEngine.Mice[1] != null)
+            {
+                MiceEngine.Mice[1].MyName = Mouse2GB;
+                MiceEngine.Mice[1].MyStatus = Mouse2SLbl;
+                MiceEngine.Mice[1].MyXnY = Mouse2LLbl;
+            }
+            if (MiceEngine.Mice.Count > 2 && MiceEngine.Mice[2] != null)
+            {
+                MiceEngine.Mice[2].MyName = Mouse3GB;
+                MiceEngine.Mice[2].MyStatus = Mouse3SLbl;
+                MiceEngine.Mice[2].MyXnY = Mouse3LLbl;
+            }*/
+            for (int i = 0; i < MiceEngine.Mice.Count; i++)
+            {
+              MiceEngine.Mice[i].SetGridView(DGV);
+            }
+        }
         private void TopMostCB_CheckedChanged(object sender, EventArgs e)
         {
             run();
