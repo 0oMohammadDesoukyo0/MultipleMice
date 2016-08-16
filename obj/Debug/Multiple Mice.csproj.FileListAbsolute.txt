@@ -1,0 +1,12 @@
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\bin\Debug\Multiple Mice.exe.config
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple Mice.csprojResolveAssemblyReference.cache
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple_Mice.Properties.Resources.resources
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple Mice.csproj.GenerateResource.Cache
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\bin\Debug\Multiple Mice.exe
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\bin\Debug\Multiple Mice.pdb
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple_Mice.UI.Main.resources
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple Mice.exe
+c:\users\mohammad desouky\documents\visual studio 2015\Projects\Multiple Mice\obj\Debug\Multiple Mice.pdb
+C:\Users\Mohammad Desouky\Source\Repos\MultipleMice\bin\Debug\Multiple Mice.exe.config
+C:\Users\Mohammad Desouky\Source\Repos\MultipleMice\obj\Debug\Multiple Mice.exe
+C:\Users\Mohammad Desouky\Source\Repos\MultipleMice\obj\Debug\Multiple Mice.pdb
