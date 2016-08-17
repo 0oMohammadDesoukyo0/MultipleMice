@@ -1,71 +1,135 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
 namespace Multiple_Mice.UI
 {
-    public partial class Cursor : Control
+    /// <summary>
+    /// UI.Cursor class inherits Control class,
+    /// it holds a transparent form which contains the cursor control.
+    /// </summary>
+    public class Cursor : Control
     {
+        /// <summary>
+        /// Transparent parent form
+        /// </summary>
+        private Form _Parent;
+        /// <summary>
+        /// Cursor color, default is green.
+        /// </summary>
+        private readonly Color _Color;
 
-        Form Parent;
-        public bool Shown = false;
-        public Cursor():base()
+        /// <summary>
+        /// Visability flag.
+        /// </summary>
+        public bool Shown;
+
+        /// <summary>
+        /// Default constructor sets cursor color to green after initiating the
+        /// parent form.
+        /// </summary>
+        public Cursor()
         {
-            Parent = new Form();
-            Parent.FormBorderStyle = FormBorderStyle.None;
-            Parent.ControlBox = false;
-            Parent.BackColor = Color.Red;
-            Parent.TransparencyKey = Color.Red;
-            Parent.Size = new Size(50, 50);
-            //Location = new Point(1, 30);
-            Size = new Size(50, 50);
-           // BackColor = Color.Green;
-            Parent.ShowInTaskbar = false;
-            Parent.ShowIcon = false;
-            Parent.FormClosing += Parent_FormClosing;
-            Parent.Controls.Add(this);
-            //Invalidate();
-            Parent.Invalidate();
-          //  Parent.Refresh();
-            
+            InitParentForm();
+            _Color = Color.Green;
         }
 
+        /// <summary>
+        /// Another constructor sets cursor color to a given color 
+        /// after initiating the parent form.
+        /// </summary>
+        public Cursor(Color c)
+        {
+            InitParentForm();
+            _Color = c;
+        }
+
+        /// <summary>
+        /// Initializing the parent form then adding the cursor control to it.
+        /// </summary>
+        private void InitParentForm()
+        {
+            _Parent = new Form
+            {
+                FormBorderStyle = FormBorderStyle.None,
+                ControlBox = false,
+                BackColor = Color.Red,
+                TransparencyKey = Color.Red,
+                Size = new Size(20, 20),
+                ShowInTaskbar = false,
+                MaximumSize = new Size(20,20),
+                ShowIcon = false
+            };
+            Size = new Size(20, 20);
+            
+            _Parent.FormClosing += Parent_FormClosing;
+            _Parent.Controls.Add(this);
+
+            //Invalidate();
+            _Parent.Invalidate();
+        }
+
+        /// <summary>
+        /// Disable parent form closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">FormClosingEventArgs</param>
         private void Parent_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
         }
 
+        /// <summary>
+        /// Painting a -45 degrees rotated Triangle as the cursor graphics
+        /// </summary>
+        /// <param name="e">PaintEventArgs</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-                Point[] Points = new Point[] {new Point(0,20), new Point(20, 20), new Point(20, 0), new Point(0, 20) };
-                Matrix myMatrix = new Matrix();
-                myMatrix.Rotate(-45, MatrixOrder.Append);
-                e.Graphics.Transform = myMatrix;
-                e.Graphics.FillPolygon(new SolidBrush(Color.DarkGreen), Points);
+            Point[] points = {new Point(0, 0), new Point(0, 20), new Point(20, 0)};
+            e.Graphics.FillPolygon(new SolidBrush(_Color), points);
         }
-        public void Show()
+
+        /// <summary>
+        /// Shows the current cursor by showing the parent form
+        /// </summary>
+        public new void Show()
         {
-            if (Parent != null)
-            { Parent.Show(); Shown = true; }
+            if (_Parent != null)
+            {
+                _Parent.Show();
+                Shown = true;
+            }
         }
-        public void Hide()
+
+        /// <summary>
+        /// Hides the current cursor by hiding the parent form.
+        /// </summary>
+        public new void Hide()
         {
-            if (Parent != null)
-            { Parent.Hide(); Shown = false; }
+            if (_Parent != null)
+            {
+                _Parent.Hide();
+                Shown = false;
+            }
         }
-        public void Move(Point Location)
+
+        /// <summary>
+        /// Moves the current cursor by moving the parent form to "location"
+        /// </summary>
+        /// <param name="location">Point where the cursor should move to</param>
+        public new void Move(Point location)
         {
-            if (Parent!=null)
+            if (_Parent != null)
             {
                 if (!Shown)
                 {
-                    Parent.Show();
+                    _Parent.Show();
                 }
-                Parent.TopMost = true;
-                Parent.Location = Location;
-                //Invalidate();
+                _Parent.TopMost = true;
+                _Parent.Location = location;
             }
         }
     }
