@@ -8,12 +8,13 @@ namespace Multiple_Mice.Code.Raw
         public string DeviceType;       // Touchpad or HID
         public IntPtr DeviceHandle;     // Handle to the device that send the input
         public string Name;             // i.e. Microsoft USB Comfort Curve Touchpad 2000 (Mouse and Keyboard Center)
-        private string _source;         // Mouse
+        private string _Source;         // Mouse
+        public RawMouse Mouse;
 
         public string Source
         {
-            get { return _source; }
-            set { _source = string.Format("Mouse_{0}", value.PadLeft(2, '0')); }
+            get { return _Source; }
+            set { _Source = string.Format("Mouse_{0}", value.PadLeft(2, '0')); }
         }
 
         public override string ToString()

@@ -9,41 +9,56 @@ namespace Multiple_Mice.Code.Raw
 {
     public class Engine : NativeWindow
     {
-        private readonly Dictionary<IntPtr, MouseEvent> _deviceList = new Dictionary<IntPtr, MouseEvent>();
         public List<RawMouse> Mice = new List<RawMouse>();
         public List<RawMouse> ActiveMice = new List<RawMouse>();
-        readonly IntPtr _devNotifyHandle;
-        private PreMessageFilter _filter;
 
-        static readonly Guid DeviceInterfaceHid = new Guid("4D1E55B2-F16F-11CF-88CB-001111000030");
-        static InputData _rawBuffer;
+        public event Action OnRawInput;
+
+        private PreMessageFilter _Filter;
+        private readonly Dictionary<IntPtr, MouseEvent> _DeviceList = new Dictionary<IntPtr, MouseEvent>();
+        private readonly IntPtr _DevNotifyHandle;
+
+        private static readonly Guid DeviceInterfaceHid = new Guid("4D1E55B2-F16F-11CF-88CB-001111000030");
+        private static InputData _rawBuffer;
 
         public Engine(IntPtr parentHandle, bool captureOnlyInForeground)
         {
             
             AssignHandle(parentHandle);
             EnumerateDevices();
-            _devNotifyHandle = RegisterForDeviceNotifications(parentHandle);
+            _DevNotifyHandle = RegisterForDeviceNotifications(parentHandle);
 
-            foreach (var device in _deviceList)
+            foreach (var device in _DeviceList)
             {
-                RawMouse m = new RawMouse(parentHandle,device.Key);
-                Mice.Add(m);
+                var rid = new RawInputDevice[1];
+
+                rid[0].UsagePage = HidUsagePage.GENERIC;
+                rid[0].Usage = HidUsage.Mouse;
+                rid[0].Flags = RawInputDeviceFlags.NONE | RawInputDeviceFlags.DEVNOTIFY | RawInputDeviceFlags.EXINPUTSINK;
+                rid[0].Target = parentHandle;
+
+                if (!Win32.RegisterRawInputDevices(rid, (uint)rid.Length, (uint)Marshal.SizeOf(rid[0])))
+                {
+                    throw new ApplicationException("Failed to register raw input device(s).");
+                }
+                //RawMouse m = new RawMouse(device.Key, this);
+                //Mice.Add(m);
+                Mice.Add(device.Value.Mouse);
             }
         }
         public void AddMessageFilter()
         {
-            if (null != _filter) return;
+            if (null != _Filter) return;
 
-            _filter = new PreMessageFilter();
-            Application.AddMessageFilter(_filter);
+            _Filter = new PreMessageFilter();
+            Application.AddMessageFilter(_Filter);
         }
 
         private void RemoveMessageFilter()
         {
-            if (null == _filter) return;
+            if (null == _Filter) return;
 
-            Application.RemoveMessageFilter(_filter);
+            Application.RemoveMessageFilter(_Filter);
         }
 
         static IntPtr RegisterForDeviceNotifications(IntPtr parent)
@@ -80,9 +95,10 @@ namespace Multiple_Mice.Code.Raw
 
             return usbNotifyHandle;
         }
+
         public void EnumerateDevices()
         {
-            _deviceList.Clear();
+            _DeviceList.Clear();
 
             var numberOfDevices = 0;
             uint deviceCount = 0;
@@ -117,13 +133,14 @@ namespace Multiple_Mice.Code.Raw
                             DeviceName = Marshal.PtrToStringAnsi(pData),
                             DeviceHandle = rid.hDevice,
                             DeviceType = Win32.GetDeviceType(rid.dwType),
-                            Name = deviceDesc
+                            Name = deviceDesc,
+                            Mouse = new RawMouse(rid.hDevice, deviceDesc, this)
                         };
 
-                        if (!_deviceList.ContainsKey(rid.hDevice))
+                        if (!_DeviceList.ContainsKey(rid.hDevice))
                         {
                             numberOfDevices++;
-                            _deviceList.Add(rid.hDevice, dInfo);
+                            _DeviceList.Add(rid.hDevice, dInfo);
                         }
                     }
 
@@ -131,22 +148,24 @@ namespace Multiple_Mice.Code.Raw
                 }
 
                 Marshal.FreeHGlobal(pRawInputDeviceList);
-                Debug.WriteLine("EnumerateDevices() found {0} Mouse/Mice", _deviceList.Count);
+                Debug.WriteLine("EnumerateDevices() found {0} Mouse/Mice", _DeviceList.Count);
                 return;
             }
             throw new Win32Exception(Marshal.GetLastWin32Error());
         }
+
         bool AlreadyExits()
         {
             return false;
         }
+
         public void ProcessRawInput(IntPtr hdevice)
         {
             //Debug.WriteLine(_rawBuffer.data.keyboard.ToString());
             //Debug.WriteLine(_rawBuffer.data.hid.ToString());
             //Debug.WriteLine(_rawBuffer.header.ToString());
 
-            if (_deviceList.Count == 0) return;
+            if (_DeviceList.Count == 0) return;
 
             var dwSize = 0;
             Win32.GetRawInputData(hdevice, DataCommand.RID_INPUT, IntPtr.Zero, ref dwSize, Marshal.SizeOf(typeof(Rawinputheader)));
@@ -157,11 +176,11 @@ namespace Multiple_Mice.Code.Raw
                 return;
             }
 
-            int lastX = _rawBuffer.data.mouse.lLastX;
-            int lastY = _rawBuffer.data.mouse.lLastY;
+            //int lastX = _rawBuffer.data.mouse.lLastX;
+            //int lastY = _rawBuffer.data.mouse.lLastY;
             //int flags = _rawBuffer.data.keyboard.Flags;
-            Debug.WriteLine("X:"+ lastX);
-            Debug.WriteLine("Y:" + lastY);
+            //Debug.WriteLine("X:"+ lastX);
+            //Debug.WriteLine("Y:" + lastY);
            /* Debug.WriteLine(_rawBuffer.data.mouse.ToString());
             Debug.WriteLine(_rawBuffer.data.hid.ToString());
             Debug.WriteLine(_rawBuffer.header.ToString());*/
@@ -171,19 +190,24 @@ namespace Multiple_Mice.Code.Raw
 
              KeyPressEvent keyPressEvent;*/
 
-            if (_deviceList.ContainsKey(_rawBuffer.header.hDevice))
+            if (_DeviceList.ContainsKey(_rawBuffer.header.hDevice))
             {
-
+                _DeviceList[_rawBuffer.header.hDevice].Mouse.MyEventHandler(_DeviceList[_rawBuffer.header.hDevice],
+                    _rawBuffer.data.mouse);
+                if (OnRawInput != null)
+                {
+                    OnRawInput();
+                }
                 //supposed to process the event here
                 // keyPressEvent = _deviceList[_rawBuffer.header.hDevice];
-                foreach (var item in Mice)
-                {
-                    if (item.MouseHandle==_rawBuffer.header.hDevice)
-                    {
-                        item.MyEventHandler(_deviceList[_rawBuffer.header.hDevice],_rawBuffer.data.mouse);
-                        break;
-                    }
-                }
+                //foreach (var item in Mice)
+                //{
+                //    if (item.MouseHandle==_rawBuffer.header.hDevice)
+                //    {
+                //        item.MyEventHandler(_deviceList[_rawBuffer.header.hDevice],_rawBuffer.data.mouse);
+                //        break;
+                //    }
+                //}
                    
          
             }
@@ -217,9 +241,10 @@ namespace Multiple_Mice.Code.Raw
             }
             base.WndProc(ref message);
         }
+
         ~Engine()
         {
-            Win32.UnregisterDeviceNotification(_devNotifyHandle);
+            Win32.UnregisterDeviceNotification(_DevNotifyHandle);
             //RemoveMessageFilter();
         }
     }

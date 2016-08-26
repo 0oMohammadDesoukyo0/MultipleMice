@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace Multiple_Mice.Code.Raw
 {
-    // ReSharper disable FieldCanBeMadeReadOnly.Global
 
     [StructLayout(LayoutKind.Explicit)]
     public struct DeviceInfo
