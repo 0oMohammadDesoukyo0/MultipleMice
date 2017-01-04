@@ -55,9 +55,9 @@
     <Compile Include="Code\Raw\RawMouse.cs" />
     <Compile Include="Code\Raw\RegistryAccess.cs" />
     <Compile Include="Code\Raw\Win32.cs" />
-    <Compile Include="Code\Structures\Engine.cs" />
-    <Compile Include="Code\Structures\Mouse.cs" />
+    <Compile Include="Code\Raw\Engine.cs" />
     <Compile Include="Code\UserActivityHook.cs" />
+    <Compile Include="Code\Utility.cs" />
     <Compile Include="UI\Cursor.cs">
       <SubType>Component</SubType>
     </Compile>

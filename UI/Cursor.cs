@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
 
 namespace Multiple_Mice.UI
@@ -12,6 +10,11 @@ namespace Multiple_Mice.UI
     public class Cursor : Control
     {
         /// <summary>
+        /// Visability flag.
+        /// </summary>
+        public bool Shown;
+
+        /// <summary>
         /// Transparent parent form
         /// </summary>
         private Form _Parent;
@@ -21,28 +24,39 @@ namespace Multiple_Mice.UI
         private readonly Color _Color;
 
         /// <summary>
-        /// Visability flag.
-        /// </summary>
-        public bool Shown;
-
-        /// <summary>
-        /// Default constructor sets cursor color to green after initiating the
+        /// Default constructor sets cursor color to green before initiating the
         /// parent form.
         /// </summary>
         public Cursor()
         {
-            InitParentForm();
             _Color = Color.Green;
+            Size = new Size(20, 20);
+            InitParentForm();
         }
 
         /// <summary>
-        /// Another constructor sets cursor color to a given color 
-        /// after initiating the parent form.
+        /// Constructor sets cursor color to a given color 
+        /// before initiating the parent form.
         /// </summary>
+        /// <param name="c">Cursor Color</param>
         public Cursor(Color c)
         {
-            InitParentForm();
             _Color = c;
+            Size = new Size(20, 20);
+            InitParentForm();
+        }
+
+        /// <summary>
+        /// Constructor sets cursor color to a given color 
+        /// and cursor size before initiating the parent form.
+        /// </summary>
+        /// <param name="c">Cursor Color</param>
+        /// <param name="size">Cursor Size</param>
+        public Cursor(Color c, Size size)
+        {
+            _Color = c;
+            Size = size;
+            InitParentForm();
         }
 
         /// <summary>
@@ -56,12 +70,11 @@ namespace Multiple_Mice.UI
                 ControlBox = false,
                 BackColor = Color.Red,
                 TransparencyKey = Color.Red,
-                Size = new Size(20, 20),
+                Size = new Size(Size.Width, Size.Height),
                 ShowInTaskbar = false,
-                MaximumSize = new Size(20,20),
+                MaximumSize = new Size(Size.Width, Size.Height),
                 ShowIcon = false
             };
-            Size = new Size(20, 20);
             
             _Parent.FormClosing += Parent_FormClosing;
             _Parent.Controls.Add(this);
@@ -81,14 +94,14 @@ namespace Multiple_Mice.UI
         }
 
         /// <summary>
-        /// Painting a -45 degrees rotated Triangle as the cursor graphics
+        /// Painting a triangle as the cursor graphics
         /// </summary>
         /// <param name="e">PaintEventArgs</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
 
-            Point[] points = {new Point(0, 0), new Point(0, 20), new Point(20, 0)};
+            Point[] points = {new Point(0, 0), new Point(0, Size.Height), new Point(Size.Width, 0)};
             e.Graphics.FillPolygon(new SolidBrush(_Color), points);
         }
 

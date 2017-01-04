@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -9,102 +8,61 @@ namespace Multiple_Mice.Code.Raw
 {
     public class RawMouse
     {
-        private readonly Dictionary<IntPtr, MouseEvent> _deviceList = new Dictionary<IntPtr, MouseEvent>();
         public delegate void DeviceEventHandler(object sender, RawInputEventArg e);
+
         public DateTime LastOperationTime;
         public event DeviceEventHandler KeyPressed;
         public Point LastLocation = new Point(-1, -1);
-        UI.Cursor Cursor = new UI.Cursor();
-        readonly object _padLock = new object();
-        public int NumberOfKeyboards { get; private set; }
         public IntPtr MouseHandle;
-        public Control MyName, MyXnY, MyStatus;
-        DataGridView DGV;int myrow=-1;
-        public RawMouse(IntPtr hwnd,IntPtr mouseHandle)
-		{
-			var rid = new RawInputDevice[1];
+        public string Name;
+        public bool IsActive;
 
-			rid[0].UsagePage = HidUsagePage.GENERIC;       
-			rid[0].Usage = HidUsage.Mouse;              
-            rid[0].Flags =  RawInputDeviceFlags.NONE | RawInputDeviceFlags.DEVNOTIFY|RawInputDeviceFlags.EXINPUTSINK;
-			rid[0].Target = hwnd;
+        private readonly UI.Cursor _Cursor;
+        private readonly Engine _Engine;
+
+        public RawMouse(IntPtr mouseHandle, string name, Engine engine)
+        {
             MouseHandle = mouseHandle;
-
-			if(!Win32.RegisterRawInputDevices(rid, (uint)rid.Length, (uint)Marshal.SizeOf(rid[0])))
-			{
-				throw new ApplicationException("Failed to register raw input device(s).");
-			}
-		}
+            Name = name;
+            IsActive = false;
+            _Cursor = new UI.Cursor(Color.Blue, new Size(30, 30));
+            _Engine = engine;
+            AdjustCursor();
+        }
 
         internal void MyEventHandler(MouseEvent mouseEvent, Rawmouse mouse)
         {
+            Screen myScreen = Screen.FromControl(_Cursor);
+            Rectangle area = myScreen.Bounds;
             LastOperationTime = DateTime.Now;
-            if(LastLocation.X==-1)
-              AdjustCursor();
-            int x = LastLocation.X + mouse.lLastX,
-                 y= LastLocation.Y + mouse.lLastY;
-            if (!Cursor.Shown)
-            {
-                Cursor.Show();
-            }
-            if (x<0)
-            {
-                x = 0;
-            }
-            else if (x> SystemParameters.FullPrimaryScreenWidth)
-            {
-                x =(int) SystemParameters.FullPrimaryScreenWidth;
-            }
-            if (y < 0)
-            {
-                y = 0;
-            }
-            else if (y > SystemParameters.FullPrimaryScreenHeight)
-            {
-                y = (int)SystemParameters.FullPrimaryScreenHeight;
-            }
-            LastLocation = new Point(x, y);
 
-            Cursor.Move(LastLocation);
-            if (MyName != null)
+            if (!_Cursor.Shown)
             {
-                MyName.Text = mouseEvent.Name;
+                _Cursor.Show();
             }
-            if (MyStatus != null)
+
+            int x = LastLocation.X + mouse.lLastX;
+            int y = LastLocation.Y + mouse.lLastY;
+
+            x = Utility.Clamp(x, 0, area.Width);
+            y = Utility.Clamp(y, 0, area.Height);
+            LastLocation = new Point(x, y);
+            _Cursor.Move(LastLocation);
+
+            if (!IsActive)
             {
-                MyStatus.Text = mouseEvent.Source;
-            }
-            if (MyXnY != null)
-            {
-                MyXnY.Text = "("+mouse.lLastX+","+mouse.lLastY+")";
-            }
-            if (myrow==-1)
-            {
-               
-                myrow = DGV.Rows.Add();
-            }
-            if (DGV!=null && DGV.Rows[myrow]!=null)
-            {
-                
-                DGV[0,myrow].Value= mouseEvent.Name;
-                DGV[1, myrow].Value = LastLocation.X;
-                DGV[2, myrow].Value = LastLocation.Y;
+                _Engine.ActiveMice.Add(this);
+                IsActive = true;
             }
         }
-        public void  SetGridView(DataGridView DGV)
-        {
-            this.DGV = DGV;
-            
-        }
+
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out Point lpPoint);
 
 
-            void AdjustCursor()
+        private void AdjustCursor()
         {
-                GetCursorPos(out LastLocation);
-                //LastLocation = System.Windows.Forms.Cursor.Position;
+            GetCursorPos(out LastLocation);
         }
-
     }
 }
