@@ -58,8 +58,6 @@
     <Compile Include="Code\Raw\Engine.cs" />
     <Compile Include="Code\UserActivityHook.cs" />
     <Compile Include="Code\Utility.cs" />
-    <Compile Include="Structures\Engineold.cs" />
-    <Compile Include="Structures\Mouse.cs" />
     <Compile Include="UI\Cursor.cs">
       <SubType>Component</SubType>
     </Compile>
