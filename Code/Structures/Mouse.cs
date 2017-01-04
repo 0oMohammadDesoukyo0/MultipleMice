@@ -9,7 +9,6 @@ namespace Multiple_Mice.Code.Structures
 
         string _PNPID,status, port,caption;
         Point location;
-        Process CurrentProcess;
         public Mouse(string PNPID,string Status, string Caption)
         {
             _PNPID = PNPID;
