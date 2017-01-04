@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace Multiple_Mice.Code.Structures
@@ -8,7 +9,7 @@ namespace Multiple_Mice.Code.Structures
 
         string _PNPID,status, port,caption;
         Point location;
-
+        Process CurrentProcess;
         public Mouse(string PNPID,string Status, string Caption)
         {
             _PNPID = PNPID;
