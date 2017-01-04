@@ -39,8 +39,10 @@ namespace Multiple_Mice.UI
             for (int i = 0; i < MiceEngine.ActiveMice.Count; i++)
             {
                 DGV[0, i].Value = MiceEngine.ActiveMice[i].Name;
-                DGV[1, i].Value = MiceEngine.ActiveMice[i].LastLocation.X;
-                DGV[2, i].Value = MiceEngine.ActiveMice[i].LastLocation.Y;
+                DGV[1, i].Value = MiceEngine.ActiveMice[i].MyWindowName();
+                DGV[2, i].Value = MiceEngine.ActiveMice[i].MyWindowHandle() + "";
+                DGV[3, i].Value = MiceEngine.ActiveMice[i].LastLocation.X;
+                DGV[4, i].Value = MiceEngine.ActiveMice[i].LastLocation.Y;
             }
         }
 

@@ -55,6 +55,8 @@
             this.label10 = new System.Windows.Forms.Label();
             this.DGV = new System.Windows.Forms.DataGridView();
             this.MouseCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WindowCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WindowPtrCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.XCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.YCol = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Mouse1GB.SuspendLayout();
@@ -317,13 +319,15 @@
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.MouseCol,
+            this.WindowCol,
+            this.WindowPtrCol,
             this.XCol,
             this.YCol});
             this.DGV.Dock = System.Windows.Forms.DockStyle.Right;
             this.DGV.Location = new System.Drawing.Point(228, 0);
             this.DGV.Name = "DGV";
             this.DGV.RowHeadersVisible = false;
-            this.DGV.Size = new System.Drawing.Size(291, 411);
+            this.DGV.Size = new System.Drawing.Size(351, 411);
             this.DGV.TabIndex = 8;
             // 
             // MouseCol
@@ -332,6 +336,18 @@
             this.MouseCol.HeaderText = "Mouse";
             this.MouseCol.Name = "MouseCol";
             this.MouseCol.ReadOnly = true;
+            // 
+            // WindowCol
+            // 
+            this.WindowCol.HeaderText = "Window";
+            this.WindowCol.Name = "WindowCol";
+            this.WindowCol.ReadOnly = true;
+            // 
+            // WindowPtrCol
+            // 
+            this.WindowPtrCol.HeaderText = "Window IntPtr";
+            this.WindowPtrCol.Name = "WindowPtrCol";
+            this.WindowPtrCol.ReadOnly = true;
             // 
             // XCol
             // 
@@ -351,7 +367,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 411);
+            this.ClientSize = new System.Drawing.Size(579, 411);
             this.Controls.Add(this.DGV);
             this.Controls.Add(this.Mouse3GB);
             this.Controls.Add(this.GeneralOptionsGB);
@@ -406,6 +422,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.DataGridView DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn MouseCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WindowCol;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WindowPtrCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn XCol;
         private System.Windows.Forms.DataGridViewTextBoxColumn YCol;
     }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -8,6 +10,24 @@ namespace Multiple_Mice.Code.Raw
 {
     public class RawMouse
     {
+
+        [DllImport("user32.dll")]
+        static extern IntPtr WindowFromPoint(Point p);
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString,int nMaxCount);
+        [DllImport("user32.dll")]
+        public static extern int GetWindowTextLength(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(out Point lpPoint);
+
+
+        Process CurrentProcess = null;
+
+
+
+
         public delegate void DeviceEventHandler(object sender, RawInputEventArg e);
 
         public DateTime LastOperationTime;
@@ -55,9 +75,32 @@ namespace Multiple_Mice.Code.Raw
                 IsActive = true;
             }
         }
+        public IntPtr MyWindowHandle()
+        {
+            IntPtr r = WindowFromPoint(LastLocation);
+            while (GetParent(r) != IntPtr.Zero)
+            {
+                r = GetParent(r);
+            }
+            
+            return r;
+        }
+        public string MyWindowName()
+        {
+            try
+            {
+                int textLength = GetWindowTextLength(MyWindowHandle());
+                StringBuilder outText = new StringBuilder(textLength + 1);
+                int a = GetWindowText(MyWindowHandle(), outText, outText.Capacity);
+                
+               return outText.ToString();
+            }
+            catch (Exception)
+            {
 
-        [DllImport("user32.dll")]
-        public static extern bool GetCursorPos(out Point lpPoint);
+                return "";
+            }
+        }
 
 
         private void AdjustCursor()
